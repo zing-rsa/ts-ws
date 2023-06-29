@@ -5,6 +5,6 @@ Users will provide a username and be allowed to enter a chatroom where they can 
 ## tech
 
 Frontend: Deno Fresh
-Backend: Deno Oak
+Backend: Deno
 DB: MongoDB
-ws: 
+ws: Deno Websockets

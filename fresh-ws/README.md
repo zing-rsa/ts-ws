@@ -1,3 +1,3 @@
 # fresh-ws 
 
-The frontend for the chatroom using Deno fresh.
+The frontend for the chatroom, using Deno Fresh
