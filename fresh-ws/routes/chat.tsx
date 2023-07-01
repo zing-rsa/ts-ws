@@ -1,5 +1,6 @@
 import Gooi from "../islands/gooi.tsx";
 
+
 export default function Chat() {
 
     return (
