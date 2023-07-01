@@ -1,4 +1,5 @@
 import { Collection } from "https://deno.land/x/mongo/mod.ts";
+
 import { Client, Message, WsData, SocketMessageType} from "./models.ts";
 import { db } from "./mongo.ts";
 
@@ -11,11 +12,12 @@ async function handleMessage(m: MessageEvent, username: string) {
     console.log("Received message: ", m.data);
 
     const data: WsData = JSON.parse(m.data);
-
+    
     if (data.type == SocketMessageType.Text){
+        console.log('Received text message: ', m.data);
         
         const message = {
-            text: data.value,
+            text: data.value.text,
             timestamp: Date.now(),
             username,
         }
@@ -26,7 +28,7 @@ async function handleMessage(m: MessageEvent, username: string) {
     }
 }
 
-export async function handleWS(req: Request) {
+export function handleWS(req: Request) {
     const queryParams = new URL(req.url).searchParams;
     const username = queryParams.get('username');
 
@@ -46,15 +48,19 @@ export async function handleWS(req: Request) {
             username: username,
             connection: ws
         });
+        console.log(clients)
     };
 
     ws.onclose = () => { 
         console.log("Closed ws connection..")
 
         const clientIdx = clients.findIndex((c) => c.username = username);
-        if (clientIdx) {
+        console.log('closing for ', username);
+
+        if (clientIdx >= 0) {
             clients.splice(clientIdx, 1);
         }
+        console.log(clients);
     };
 
     ws.onmessage = (ev: MessageEvent) => handleMessage(ev, username);
