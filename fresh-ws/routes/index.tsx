@@ -1,30 +1,39 @@
-import { Head } from "$fresh/runtime.ts";
-import { useSignal } from "@preact/signals";
-import Counter from "../islands/Counter.tsx";
+import { Handlers } from "https://deno.land/x/fresh@1.2.0/server.ts";
+
+import { username } from "../states/userstate.ts";
+
+export const handler: Handlers = {
+    async POST(req, ctx) {
+        const form = await req.formData();
+        const user = form.get('username')?.toString();
+
+        username.value = user;
+
+        console.log('setting user to: ', user);
+
+        const headers = new Headers();
+        headers.set('location', "/chat");
+        return new Response(
+            null,
+            {
+                status: 303,
+                headers
+            }
+        )
+    }
+}
+
 
 export default function Home() {
-//   const count = useSignal(3);
 
   return (
-    <div>Login</div>
-
-    
-    // <>
-    //   <Head>
-    //     <title>Fresh App</title>
-    //   </Head>
-    //   <div class="p-4 mx-auto max-w-screen-md">
-    //     <img
-    //       src="/logo.svg"
-    //       class="w-32 h-32"
-    //       alt="the fresh logo: a sliced lemon dripping with juice"
-    //     />
-    //     <p class="my-6">
-    //       Welcome to `fresh`. Try updating this message in the
-    //       ./routes/index.tsx file, and refresh.
-    //     </p>
-    //     <Counter count={count} />
-    //   </div>
-    // </>
+    <div>
+        <h1>Login</h1>
+        <form method='post'>
+            <label>username</label>
+            <input type='text' name='username' value='' />
+            <button type='submit' >Login</button>
+        </form>
+    </div>
   );
 }

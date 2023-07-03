@@ -1,5 +1,5 @@
+import { username } from "../states/userstate.ts";
 import Gooi from "../islands/gooi.tsx";
-
 
 export default function Chat() {
 
@@ -7,7 +7,7 @@ export default function Chat() {
 
         <div>
             <div>CHAT</div> 
-            <Gooi></Gooi>
+            <Gooi username={username.value}></Gooi>
         </div>
 
     )

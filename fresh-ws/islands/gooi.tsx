@@ -1,14 +1,13 @@
 import { useCallback, useEffect } from "https://esm.sh/preact@10.15.1/hooks";
-import { useSignal } from "https://esm.sh/*@preact/signals@1.1.3";
+import { useSignal } from "@preact/signals";
 import { Button } from "../components/Button.tsx"
 import { SocketMessageType, WsData } from "../models.ts";
 
-export default function Gooi() {
+type GooiProps = { username: string | undefined }
 
-    // const ws = useSignal(new WebSocket("ws://localhost:5000?username=zing"));
+export default function Gooi(props: GooiProps) {
 
     const ws = useSignal<WebSocket | null>(null);
-
     const count = useSignal(0);
 
     const gooi = useCallback((text: string) => {
@@ -29,11 +28,13 @@ export default function Gooi() {
     }, [ws]);
 
     useEffect(() => {
-        ws.value = new WebSocket("ws://localhost:5000?username=zing");
-        
-        ws.value.onopen    = ()  => { console.log('Connected..') }
-        ws.value.onmessage = (m) => { console.log(m.data) }
-        
+        if (props.username) {
+            console.log("Connecting using: ", "ws://localhost:5000?username=" + props.username);
+
+            ws.value = new WebSocket("ws://localhost:5000?username=" + props.username);
+            ws.value.onopen    = ()  => { console.log('Connected..') }
+            ws.value.onmessage = (m) => { console.log(m.data) }
+        }
     }, []);
 
     return (

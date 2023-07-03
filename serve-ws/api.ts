@@ -54,13 +54,11 @@ export function handleWS(req: Request) {
     ws.onclose = () => { 
         console.log("Closed ws connection..")
 
-        const clientIdx = clients.findIndex((c) => c.username = username);
-        console.log('closing for ', username);
+        const clientIdx = clients.findIndex((c) => c.username == username);
 
         if (clientIdx >= 0) {
             clients.splice(clientIdx, 1);
         }
-        console.log(clients);
     };
 
     ws.onmessage = (ev: MessageEvent) => handleMessage(ev, username);
