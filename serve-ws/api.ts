@@ -1,6 +1,6 @@
 import { Collection } from "https://deno.land/x/mongo/mod.ts";
 
-import { Client, Message, WsData, SocketMessageType} from "./models.ts";
+import { Client, Message, WsData, SocketMessageType, WsTextValue} from "./models.ts";
 import { db } from "./mongo.ts";
 
 const clients: Client[] = [];
@@ -9,23 +9,24 @@ const mongo = db();
 const messages: Collection<Message> = mongo.collection<Message>("messages");
 
 async function handleMessage(m: MessageEvent, username: string) {
-    console.log("Received message: ", m.data);
 
     const data: WsData = JSON.parse(m.data);
     
     if (data.type == SocketMessageType.Text){
         console.log('Received text message: ', m.data);
         
-        const message = {
+        const message: WsTextValue = {
             text: data.value.text,
             timestamp: Date.now(),
             username,
         }
         
         await messages.insertOne(message);
-    
-        clients.forEach((c) => c.connection.send(JSON.stringify(message)));
+
+        data.value = message;
     }
+
+    clients.forEach((c) => c.connection.send(JSON.stringify(data)));
 }
 
 export function handleWS(req: Request) {

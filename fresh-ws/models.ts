@@ -1,3 +1,8 @@
+export interface Message {
+    text: string,
+    username: string
+}
+
 export type WsData = {
     type: SocketMessageType.Text;
     value: WsTextValue
@@ -11,7 +16,8 @@ export type WsData = {
 
 export interface WsTextValue {
     text: string,
-    username: string
+    username: string,
+    timestamp?: number
 }
 
 export interface WsMessageDeleteValue {

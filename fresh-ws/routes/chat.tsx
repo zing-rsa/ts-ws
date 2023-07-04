@@ -7,6 +7,7 @@ export default function Chat() {
 
         <div>
             <div>CHAT</div> 
+            
             <Gooi username={username.value}></Gooi>
         </div>
 

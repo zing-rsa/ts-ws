@@ -30,7 +30,8 @@ export type WsData = {
 
 export interface WsTextValue {
     text: string,
-    username: string
+    username: string, 
+    timestamp?: number
 }
 
 export interface WsMessageDeleteValue {
