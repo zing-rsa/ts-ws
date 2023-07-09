@@ -1,9 +1,10 @@
 import { useCallback, useEffect } from "https://esm.sh/preact@10.15.1/hooks";
 import { useSignal } from "@preact/signals";
-import { Button } from "../components/Button.tsx"
+
 import { Message, SocketMessageType, WsData } from "../models.ts";
 import { MessageList } from "../components/MessageList.tsx";
 import { MessageItem } from "../components/MessageItem.tsx";
+import { PrimaryButton } from "../components/PrimaryButton.tsx"
 
 type GooiProps = { username: string | undefined }
 
@@ -12,6 +13,7 @@ export default function Gooi(props: GooiProps) {
 
     const ws = useSignal<WebSocket | null>(null);
     const messageList = useSignal<Message[]>([]);
+    const draft = useSignal<string>('');
 
     const count = useSignal(0);
 
@@ -24,7 +26,6 @@ export default function Gooi(props: GooiProps) {
             const message: Message = data.value;
 
             messageList.value = [...messageList.value, message];
-            console.log(messageList.value);
         }
     }, []);
 
@@ -55,15 +56,17 @@ export default function Gooi(props: GooiProps) {
         }
     }, []);
 
-    return (
-        <div>
-            <div>{count}</div>
-            
-            <Button onClick={() => gooi('test')}>Gooi</Button>
+    const update = useCallback((e) => {
+        draft.value = e.target.value;
+    }, []);
 
-            <div>
-                {messageList.value.map((m) => <MessageItem message={m} /> )}
+    return (
+        <>
+            <MessageList messages={messageList.value} />
+            <div class="h-12 flex flex-row justify-center">
+                <input type="text" value={draft} onInput={update} class="h-10 w-9/12 my-1 px-2 rounded-md shadow-md focus:outline-none"  />
+                <PrimaryButton onClick={() => gooi(draft.value)} class="h-10 my-1 mx-2">Gooi</PrimaryButton>
             </div>
-        </div>
+        </>
     )
 }
