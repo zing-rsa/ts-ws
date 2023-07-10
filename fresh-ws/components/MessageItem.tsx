@@ -1,4 +1,4 @@
-import { Message } from "../models.ts";
+import { Message } from "models/ws.ts";
 
 type MessageProps = Message
 

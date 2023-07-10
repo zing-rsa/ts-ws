@@ -1,5 +1,5 @@
 import { MessageItem } from "./MessageItem.tsx";
-import { Message } from "../models.ts";
+import { Message } from "models/ws.ts";
 
 export function MessageList(props: {messages: Message[]}) {
     return (

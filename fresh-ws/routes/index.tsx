@@ -1,19 +1,24 @@
-import { Handlers } from "https://deno.land/x/fresh@1.2.0/server.ts";
-import { Head } from "$fresh/runtime.ts";
-
-import { username } from "../states/userstate.ts";
+import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
     async POST(req, ctx) {
         const form = await req.formData();
-        const user = form.get('username')?.toString();
+        const username = form.get('username')?.toString();
 
-        username.value = user;
-
-        console.log('setting user to: ', user);
+        if (username === null || username === "" || username === undefined){
+            return new Response(
+                null,
+                {
+                    status: 400
+                }
+            )
+        } else {
+            console.log('setting username to: ', username);
+        }
 
         const headers = new Headers();
-        headers.set('location', "/chat");
+        headers.set('location', "/chat?username="+ username); // would be nice to not send this in the query
+        
         return new Response(
             null,
             {

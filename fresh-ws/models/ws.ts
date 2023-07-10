@@ -1,3 +1,8 @@
+export interface Client {
+    username: string;
+    connection: WebSocket;
+}
+
 export interface Message {
     text: string,
     username: string

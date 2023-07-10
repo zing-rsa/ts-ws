@@ -1,11 +1,31 @@
-import { username } from "../states/userstate.ts";
+import { Handlers, PageProps } from "$fresh/server.ts";
+
 import Gooi from "../islands/gooi.tsx";
 import * as config from '../config.ts'
-import ToolBar from "../components/ToolBar.tsx";
+import ToolBar from "components/ToolBar.tsx";
+import { APP_URL } from "config";
+import { PropertyAccessExpression } from "https://deno.land/x/ts_morph@17.0.1/ts_morph.js";
+import { SignatureHelpRetriggeredReason } from "https://deno.land/x/ts_morph@17.0.1/common/typescript.js";
 
-export default function Chat() {
+export const handler: Handlers = {
+    async GET(req, ctx) {
 
-    if (config.env == "dev") username.value = 'test';
+        const queryParams = new URL(req.url).searchParams;
+        const username = queryParams.get('username');
+
+        console.log(username)
+
+        return ctx.render(username); // add db.messages to this
+    }
+}
+
+type UsernameProps = string;
+
+export default function Chat(props: PageProps<UsernameProps>) {
+
+    // if (config.env == "dev" && !props.username ) props.username = 'test';
+
+    console.log(props.data)
 
     return (
         <>
@@ -15,7 +35,7 @@ export default function Chat() {
                     <div class="h-12 text-center flex flex-col justify-center">
                         <div>CHAT</div>
                     </div>
-                    <Gooi username={username.value}></Gooi>
+                    <Gooi username={props.data} url={APP_URL}></Gooi>
                 </div>
             </div>
         </>
