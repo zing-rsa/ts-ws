@@ -18,7 +18,8 @@
     "components/": "./components/",
     "ws/": "./ws/",
     "config": "./config.ts",
-    "mongo": "./mongo.ts"
+    "mongo": "./mongo.ts",
+    "islands/": "./islands/"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

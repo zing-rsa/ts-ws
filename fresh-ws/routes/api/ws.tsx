@@ -24,7 +24,6 @@ export const handler: Handlers = {
                 username: username,
                 connection: ws
             });
-            console.log(clients)
         };
     
         ws.onclose = () => { 

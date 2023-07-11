@@ -1,19 +1,23 @@
 import { useCallback, useEffect } from "https://esm.sh/preact@10.15.1/hooks";
 import { useSignal } from "@preact/signals";
+import { useRef } from "preact/hooks";
 
 import { Message, SocketMessageType, WsData } from "models/ws.ts";
-import { MessageList } from "../components/MessageList.tsx";
 import { PrimaryButton } from "../components/PrimaryButton.tsx"
+import { MessageItem } from "components/MessageItem.tsx";
 
-type GooiProps = { username: string | undefined, url: string }
+interface GooiProps { 
+    username: string | undefined,
+    url: string,
+    messages: Message[]
+}
 
 export default function Gooi(props: GooiProps) {
 
     const ws = useSignal<WebSocket | null>(null);
-    const messageList = useSignal<Message[]>([]);
+    const messageList = useSignal<Message[]>(props.messages);
     const draft = useSignal<string>('');
-
-    const count = useSignal(0);
+    const chatWindowRef = useRef<HTMLDivElement>(null);
 
     const updateMessages = useCallback((m: MessageEvent<string>) => {
 
@@ -30,6 +34,7 @@ export default function Gooi(props: GooiProps) {
     const gooi = useCallback((text: string) => {
         if (ws.value) {
 
+
             const data: WsData = {
                 type: SocketMessageType.Text, 
                 value: {
@@ -39,8 +44,6 @@ export default function Gooi(props: GooiProps) {
             }
 
             ws.value.send(JSON.stringify(data));
-
-            count.value++;
         }
     }, [ws]);
 
@@ -56,13 +59,21 @@ export default function Gooi(props: GooiProps) {
         }
     }, []);
 
+    useEffect(() => {
+        if (chatWindowRef.current) {
+            chatWindowRef.current.scrollTo({ top: chatWindowRef.current.scrollHeight, behavior: "smooth"});
+        }
+    }, [chatWindowRef.current?.scrollHeight])
+
     const update = useCallback((e) => {
         draft.value = e.target.value;
     }, []);
 
     return (
         <>
-            <MessageList messages={messageList.value} />
+            <div ref={chatWindowRef} class='w-full h-[calc(100%-6rem)] px-2 md:px-6 flex flex-col bg-background bg-chat-tile overflow-y-auto shadow-inner'>
+                {messageList.value.map((m) => ( <MessageItem message={m} /> ))}
+            </div>
             <div class="h-12 flex flex-row justify-center">
                 <input type="text" value={draft} onInput={update} class="h-10 w-9/12 my-1 px-2 rounded-md shadow-md focus:outline-none"  />
                 <PrimaryButton onClick={() => gooi(draft.value)} class="h-10 my-1 mx-2">Gooi</PrimaryButton>

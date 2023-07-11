@@ -1,11 +1,13 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 
-import Gooi from "../islands/gooi.tsx";
-import * as config from '../config.ts'
 import ToolBar from "components/ToolBar.tsx";
+import Gooi from "../islands/gooi.tsx";
+import { Message } from "models/ws.ts";
 import { APP_URL } from "config";
-import { PropertyAccessExpression } from "https://deno.land/x/ts_morph@17.0.1/ts_morph.js";
-import { SignatureHelpRetriggeredReason } from "https://deno.land/x/ts_morph@17.0.1/common/typescript.js";
+import { db } from "mongo";
+
+const mongo = db();
+const messages = mongo.collection<Message>('messages')
 
 export const handler: Handlers = {
     async GET(req, ctx) {
@@ -13,19 +15,50 @@ export const handler: Handlers = {
         const queryParams = new URL(req.url).searchParams;
         const username = queryParams.get('username');
 
-        console.log(username)
+        const recentMessages = await messages.find({}, {
+            limit: 20
+        }).toArray();
 
-        return ctx.render(username); // add db.messages to this
+        return ctx.render({
+            username,
+            recentMessages
+        }); 
+    },
+    async POST(req, ctx) {
+
+        console.log('chat post')
+        const form = await req.formData();
+        const username = form.get('username')?.toString();
+
+        if (username === null || username === "" || username === undefined){
+            return new Response(
+                null,
+                {
+                    status: 400
+                }
+            )
+        } else {
+            console.log('setting username to: ', username);
+        }
+        
+        const recentMessages = await messages.find({}, {
+            limit: 20
+        }).toArray();
+
+        return ctx.render({
+            username,
+            recentMessages
+        }); 
     }
 }
 
-type UsernameProps = string;
 
-export default function Chat(props: PageProps<UsernameProps>) {
+interface chatProps {
+    username: string,
+    recentMessages: Message[]
+}
 
-    // if (config.env == "dev" && !props.username ) props.username = 'test';
-
-    console.log(props.data)
+export default function Chat(props: PageProps<chatProps>) {
 
     return (
         <>
@@ -35,9 +68,9 @@ export default function Chat(props: PageProps<UsernameProps>) {
                     <div class="h-12 text-center flex flex-col justify-center">
                         <div>CHAT</div>
                     </div>
-                    <Gooi username={props.data} url={APP_URL}></Gooi>
+                    <Gooi username={props.data.username} messages={props.data.recentMessages} url={APP_URL}></Gooi>
                 </div>
             </div>
         </>
     )
-}
+}3

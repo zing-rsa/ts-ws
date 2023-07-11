@@ -13,7 +13,6 @@ export async function handleMessage(m: MessageEvent, username: string) {
     const data: WsData = JSON.parse(m.data);
     
     if (data.type == SocketMessageType.Text){
-        console.log('Received text message: ', m.data);
         
         const message: WsTextValue = {
             text: data.value.text,

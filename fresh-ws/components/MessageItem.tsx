@@ -5,9 +5,9 @@ type MessageProps = Message
 export function MessageItem(props: {message: MessageProps}){
 
     return (
-        <div class='bg-white rounded-lg flex flex-col h-48'>
-            <div class="h-4 font-2xs px-2 italic text-">{props.message.username}</div>
-            <div class="bg-purple">{props.message.text}</div>
+        <div class='min-h-12 w-fit m-2 p-1 flex flex-col rounded-lg bg-white '>
+            <div class="text-sm italic">{props.message.username}</div>
+            <div class="min-w-[4rem] md:min-w-[8rem] max-w-[12rem] md:max-w-[30rem] lg:max-w-[40rem]">{props.message.text}</div>
         </div>
     )
 }
