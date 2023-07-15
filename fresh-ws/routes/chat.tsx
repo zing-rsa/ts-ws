@@ -1,12 +1,14 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 
+import MessageList from "islands/MessageList.tsx";
 import ToolBar from "components/ToolBar.tsx";
-import Gooi from "../islands/gooi.tsx";
 import { Message } from "models/ws.ts";
 import { Session } from "models/db.ts";
+import Gooi from "islands/Gooi.tsx";
 import { State } from 'models/mw.ts'
 import { APP_URL } from "config";
 import { db } from "mongo";
+import UserStatus from "islands/UserStatus.tsx";
 
 const mongo = db();
 const messages = mongo.collection<Message>('messages')
@@ -23,9 +25,12 @@ export const handler: Handlers<any, State> = {
             limit: 20
         }).toArray();
 
+        const activeSessions = await sessions.find({}).toArray();
+
         return ctx.render({
             session,
-            recentMessages
+            recentMessages,
+            activeSessions
         }); 
     }
 }
@@ -33,6 +38,7 @@ export const handler: Handlers<any, State> = {
 interface chatProps {
     session: Session,
     recentMessages: Message[]
+    activeSessions: Session[]
 }
 
 export default function Chat(props: PageProps<chatProps>) {
@@ -41,13 +47,17 @@ export default function Chat(props: PageProps<chatProps>) {
         <>
             <ToolBar />
             <div class="flex h-screen">
-                <div class='h-5/6 w-9/12 m-auto my-1/6 bg-secondary shadow-lg rounded-md no-collapse overflow-y-scroll'>
-                    <div class="h-12 text-center flex flex-col justify-center">
+                <div class='h-5/6 w-9/12 m-auto my-1/6 bg-secondary shadow-lg rounded-md no-collapse'>
+                    <div class="h-12 text-center flex flex-col justify-center bg-primary rounded-t-md">
                         <div>CHAT</div>
                     </div>
-                    <Gooi session={props.data.session} messages={props.data.recentMessages} url={APP_URL}></Gooi>
+                    <div class='w-full h-[calc(100%-6rem)] flex'>
+                        <MessageList messages={props.data.recentMessages} />
+                        <UserStatus sessions={props.data.activeSessions} />
+                    </div>
+                    <Gooi session={props.data.session} url={APP_URL}></Gooi>
                 </div>
             </div>
         </>
     )
-}3
+}

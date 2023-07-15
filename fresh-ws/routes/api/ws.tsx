@@ -12,7 +12,9 @@ const mongo = db();
 const messages: Collection<Message> = mongo.collection('messages');
 const sessions: Collection<Session> = mongo.collection('sessions');
 
-export const clients = signal<Client[]>([]);
+const clients = signal<Client[]>([]);
+const typing = signal<boolean>(false);
+let typingTimeout = 0;
 
 export const handler: Handlers<any, State> = {
     async GET(req, ctx){
@@ -46,6 +48,9 @@ async function handleMessage(e: MessageEvent, session: Session) {
     const data: WsData = JSON.parse(e.data);
     
     if (data.type == SocketMessageType.Text){
+        if (typing.value) {
+            handleTypeEnd(session);
+        }
         
         const message: WsTextValue = {
             text: data.value.text,
@@ -56,9 +61,24 @@ async function handleMessage(e: MessageEvent, session: Session) {
         await messages.insertOne(message);
 
         data.value = message;
+
+        
+        clients.value.forEach((c) => c.connection.send(JSON.stringify(data)));
     }
 
-    clients.value.forEach((c) => c.connection.send(JSON.stringify(data)));
+    if (data.type == SocketMessageType.UserAction){
+        if (data.value.typing) {
+            typing.value = true;
+            clients.value.forEach((c) => {
+                if(c.session.sessionId != session.sessionId){
+                    c.connection.send(JSON.stringify(data))
+                }
+            });
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => handleTypeEnd(session), 2000);
+        }
+    }
 }
 
 async function handleOpen(e: Event, ws: WebSocket, session: Session){
@@ -67,6 +87,18 @@ async function handleOpen(e: Event, ws: WebSocket, session: Session){
     clients.value.push({
         session: session,
         connection: ws
+    });
+
+    clients.value.forEach((c) => {
+        if (c.session.sessionId != session.sessionId){
+            c.connection.send(JSON.stringify({
+                type: SocketMessageType.AccountState,
+                value: {
+                    online: true,
+                    session: session
+                }
+            }))
+        }
     });
 }
 
@@ -80,6 +112,16 @@ async function handleClose(e: CloseEvent, session: Session) {
     if (clientIdx >= 0) {
         clients.value.splice(clientIdx, 1);
     }
+
+    clients.value.forEach((c) => {
+        c.connection.send(JSON.stringify({
+            type: SocketMessageType.AccountState,
+            value: {
+                online:false,
+                session: session
+            }
+        })); 
+    })
 }
 
 async function handleError(e: Event, ws: WebSocket, session: Session){
@@ -93,4 +135,16 @@ async function handleError(e: Event, ws: WebSocket, session: Session){
     if (clientIdx >= 0) {
         clients.value.splice(clientIdx, 1);
     }
+}
+
+function handleTypeEnd(session: Session) {
+    typing.value = false;
+
+    clients.value.forEach((c) => c.connection.send(JSON.stringify({
+        type: SocketMessageType.UserAction,
+        value: {
+            typing: false,
+            session: session
+        }
+    })));
 }

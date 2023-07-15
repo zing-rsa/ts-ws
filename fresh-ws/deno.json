@@ -19,7 +19,8 @@
     "ws/": "./ws/",
     "config": "./config.ts",
     "mongo": "./mongo.ts",
-    "islands/": "./islands/"
+    "islands/": "./islands/",
+    "util/": "./util/"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

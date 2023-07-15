@@ -17,11 +17,11 @@ export type WsData = {
     type: SocketMessageType.MessageDelete;
     value: WsMessageDeleteValue
 } | {
-    type: SocketMessageType.TypeStart | SocketMessageType.TypeEnd;
-    value: WsTextValue
+    type: SocketMessageType.UserAction
+    value: WsTypingValue
 } | {
-    type: SocketMessageType.Login | SocketMessageType.Logout;
-    value: WsTextValue
+    type: SocketMessageType.AccountState
+    value: WsAccountStateValue
 }
 
 export interface WsTextValue {
@@ -35,18 +35,18 @@ export interface WsMessageDeleteValue {
 }
 
 export interface WsTypingValue {
+    typing: boolean,
     session: Session
 }
 
 export interface WsAccountStateValue {
+    online: boolean,
     session: Session
 }
 
 export enum SocketMessageType {
     Text = "Text",
     MessageDelete = "MessageDelete",
-    TypeStart = "TypeStart",
-    TypeEnd = "TypeEnd",
-    Login = "Login",
-    Logout = "Logout"
+    UserAction = "UserAction",
+    AccountState = "AccountState"
 }

@@ -7,7 +7,9 @@ import * as $1 from "./routes/_middleware.ts";
 import * as $2 from "./routes/api/ws.tsx";
 import * as $3 from "./routes/chat.tsx";
 import * as $4 from "./routes/index.tsx";
-import * as $$0 from "./islands/gooi.tsx";
+import * as $$0 from "./islands/Gooi.tsx";
+import * as $$1 from "./islands/MessageList.tsx";
+import * as $$2 from "./islands/UserStatus.tsx";
 
 const manifest = {
   routes: {
@@ -18,7 +20,9 @@ const manifest = {
     "./routes/index.tsx": $4,
   },
   islands: {
-    "./islands/gooi.tsx": $$0,
+    "./islands/Gooi.tsx": $$0,
+    "./islands/MessageList.tsx": $$1,
+    "./islands/UserStatus.tsx": $$2,
   },
   baseUrl: import.meta.url,
 };

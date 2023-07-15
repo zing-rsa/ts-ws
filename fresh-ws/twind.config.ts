@@ -18,7 +18,7 @@ export default {
                 'primary': '#2b507d',
                 'secondary': '#b3cae5',
                 'tertiary': '#acb4bd',
-                'accent': '#0e1425',
+                'accent': '#383838'
             },
             backgroundImage: {
                 'chat-tile': "url(/topo.svg)"
