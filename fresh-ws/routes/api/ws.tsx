@@ -1,9 +1,9 @@
 import { Collection } from "https://deno.land/x/mongo/mod.ts";
 import { Handlers } from "$fresh/server.ts";
+import { signal } from "@preact/signals-core"
 
 import { WsData, WsTextValue, SocketMessageType } from "models/ws.ts";
-import { clients } from "../../states/clientState.ts";
-import { Message } from "models/ws.ts";
+import { Message, Client } from "models/ws.ts";
 import { Session } from "models/db.ts";
 import { State } from "models/mw.ts";
 import { db } from "mongo";
@@ -11,6 +11,8 @@ import { db } from "mongo";
 const mongo = db();
 const messages: Collection<Message> = mongo.collection('messages');
 const sessions: Collection<Session> = mongo.collection('sessions');
+
+export const clients = signal<Client[]>([]);
 
 export const handler: Handlers<any, State> = {
     async GET(req, ctx){
@@ -27,38 +29,21 @@ export const handler: Handlers<any, State> = {
     
         const { socket: ws, response } = Deno.upgradeWebSocket(req);
     
-        ws.onopen = () => { 
-            console.log("New ws connection..") 
-            clients.value.push({
-                session: session,
-                connection: ws
-            });
-        };
+        ws.onopen = (ev: Event) => handleOpen(ev, ws, session);
     
-        ws.onclose = async () => { 
-            console.log("Closed ws connection..")
-    
-            const clientIdx = clients.value.findIndex((c) => c.session.sessionId == session.sessionId);
-    
-            if (clientIdx >= 0) {
-                clients.value.splice(clientIdx, 1);
-            }
-            await sessions.deleteOne({ sessionId: session.sessionId })
-        };
+        ws.onclose = (ev: CloseEvent) => handleClose(ev, session);
     
         ws.onmessage = (ev: MessageEvent) => handleMessage(ev, session);
         
-        ws.onerror = (e) => {
-            console.error(e)
-        } 
+        ws.onerror = (ev: ErrorEvent | Event) => handleError(ev, ws, session);
         
         return response;
     }
 }
 
-export async function handleMessage(m: MessageEvent, session: Session) {
+async function handleMessage(e: MessageEvent, session: Session) {
 
-    const data: WsData = JSON.parse(m.data);
+    const data: WsData = JSON.parse(e.data);
     
     if (data.type == SocketMessageType.Text){
         
@@ -74,4 +59,38 @@ export async function handleMessage(m: MessageEvent, session: Session) {
     }
 
     clients.value.forEach((c) => c.connection.send(JSON.stringify(data)));
+}
+
+async function handleOpen(e: Event, ws: WebSocket, session: Session){
+    console.log("Starting session: ", session.sessionId); 
+
+    clients.value.push({
+        session: session,
+        connection: ws
+    });
+}
+
+async function handleClose(e: CloseEvent, session: Session) {
+    console.log("Closing session: ", session.sessionId);
+    
+    await sessions.deleteOne({ sessionId: session.sessionId });
+
+    const clientIdx = clients.value.findIndex((c) => c.session.sessionId == session.sessionId);
+
+    if (clientIdx >= 0) {
+        clients.value.splice(clientIdx, 1);
+    }
+}
+
+async function handleError(e: Event, ws: WebSocket, session: Session){
+    console.log("Session errored: ", session.sessionId); 
+    if (ws.OPEN) ws.close();
+
+    await sessions.deleteOne({ sessionId: session.sessionId });
+
+    const clientIdx = clients.value.findIndex((c) => c.session.sessionId == session.sessionId);
+
+    if (clientIdx >= 0) {
+        clients.value.splice(clientIdx, 1);
+    }
 }
