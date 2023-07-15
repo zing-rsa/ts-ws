@@ -4,7 +4,7 @@ import MessageList from "islands/MessageList.tsx";
 import ToolBar from "components/ToolBar.tsx";
 import { Message } from "models/ws.ts";
 import { Session } from "models/db.ts";
-import Gooi from "islands/Gooi.tsx";
+import Gooi from "islands/gooi.tsx";
 import { State } from 'models/mw.ts'
 import { APP_URL } from "config";
 import { db } from "mongo";
