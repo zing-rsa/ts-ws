@@ -29,7 +29,7 @@ export default function Gooi(props: GooiProps) {
         if (textInputRef.current) textInputRef.current.addEventListener('keydown', submitOnEnter);
 
         if (props.session) {
-            const wsUrl = "ws://" + props.url + "/api/ws";
+            const wsUrl = "wss://" + props.url + "/api/ws";
             connect(wsUrl);
         }
     }, []);
