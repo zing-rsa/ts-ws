@@ -38,7 +38,7 @@ export default function Gooi(props: GooiProps) {
         if (wsClient.value) {
             
             const data: WsData = {
-                type: SocketMessageType.Text, 
+                type: SocketMessageType.Text,
                 value: {
                     session: props.session,
                     text: text
