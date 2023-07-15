@@ -38,7 +38,7 @@ export default function Home() {
   return (
     <div class="h-64 w-96 m-auto mt-64 bg-secondary rounded-md p-0 flex flex-col shadow-xl no-collapse font-roboto">
         <div class='my-8 text-center text-lg font-bold'>Welcome!</div>
-        <form method='post' action={`http://${APP_URL}`}>
+        <form method='post' action={`https://${APP_URL}`}>
             <div class="flex flex-col items-center">
                 <label class="text-sm text-primary my-1">Choose a username:</label>
                 <input type='text' name='username' value='' class="rounded-md h-8 w-48 focus:outline-none p-2 shadow-lg" />
