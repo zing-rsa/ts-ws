@@ -45,7 +45,7 @@ export default function Chat(props: PageProps<ChatProps>) {
         <>
             <ToolBar />
             <div class="flex h-screen">
-                <div class='h-5/6 w-9/12 m-auto my-1/6 bg-background shadow-2xl rounded-md no-collapse overflow-hidden'>
+                <div class='h-[calc(100%-4rem)] sm:h-[90%] w-11/12 sm:w-9/12 mx-auto mt-12 sm:mt-2/6 bg-background shadow-2xl rounded-md no-collapse overflow-hidden'>
                     <div class="h-12 text-center flex flex-col justify-center bg-primary rounded-t-md text-text-light">
                         <div>Chat</div>
                     </div>
