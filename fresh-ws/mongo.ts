@@ -1,4 +1,4 @@
-import { MongoClient, Database } from "https://deno.land/x/mongo/mod.ts"
+import { MongoClient, Database } from "$mongo"
 import * as config from "./config.ts";
 
 const client: MongoClient = new MongoClient();

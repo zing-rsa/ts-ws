@@ -1,30 +1,40 @@
-import { UUID } from "https://deno.land/x/mongo/mod.ts";
 import { Handlers } from "$fresh/server.ts";
+import { UUID } from "$mongo";
 
 import { APP_URL, HTTP_PTCL } from "config";
 import { Session } from 'models/db.ts'
 import { db } from "mongo";
+import { State } from "models/mw.ts";
 
 const mongo = db();
-const Sessions = mongo.collection<Session>('sessions');
+const sessions = mongo.collection<Session>('sessions');
 
-export const handler: Handlers = {
+// deno-lint-ignore no-explicit-any
+export const handler: Handlers<any, State> = {
     async POST(req, ctx) {
+
+        const activeSession = await sessions.findOne({ sessionId: ctx.state.cookies['sessionId'] })
+
+        if(activeSession) {
+            await sessions.deleteOne({ sessionId: activeSession.sessionId });
+        }
+
         const form = await req.formData();
         const username = form.get('username')?.toString();
         const sessionId = new UUID().toString();
 
         if (username === null || username === "" || username === undefined){
-            return new Response(null,{status: 400})
+            return new Response(null, {status: 400})
         }
 
         const session: Session = {
             username,
             sessionId,
-            accent: '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
+            accent: '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6),
+            createdAt: new Date()
         }
 
-        await Sessions.insertOne(session);
+        await sessions.insertOne(session);
 
         const headers = new Headers();
         headers.set('location', "/chat");

@@ -6,7 +6,7 @@ import ToolBar from "components/ToolBar.tsx";
 import { APP_URL, WS_PTCL } from "config";
 import { Message } from "models/ws.ts";
 import { Session } from "models/db.ts";
-import Gooi from "islands/gooi.tsx";
+import Gooi from "islands/Gooi.tsx";
 import { State } from 'models/mw.ts'
 import { db } from "mongo";
 
@@ -14,8 +14,9 @@ const mongo = db();
 const messages = mongo.collection<Message>('messages')
 const sessions = mongo.collection<Session>('sessions')
 
+// deno-lint-ignore no-explicit-any
 export const handler: Handlers<any, State> = {
-    async GET(req, ctx) {
+    async GET(_req, ctx) {
 
         const session = await sessions.findOne({ sessionId: ctx.state.cookies['sessionId'] })
         

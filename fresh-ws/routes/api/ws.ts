@@ -81,7 +81,7 @@ async function handleMessage(e: MessageEvent, session: Session) {
     }
 }
 
-async function handleOpen(e: Event, ws: WebSocket, session: Session){
+function handleOpen(_e: Event, ws: WebSocket, session: Session){
     console.log("Starting session: ", session.sessionId); 
 
     clients.value.push({
@@ -102,10 +102,8 @@ async function handleOpen(e: Event, ws: WebSocket, session: Session){
     });
 }
 
-async function handleClose(e: CloseEvent, session: Session) {
+async function handleClose(_e: CloseEvent, session: Session) {
     console.log("Closing session: ", session.sessionId);
-    
-    await sessions.deleteOne({ sessionId: session.sessionId });
 
     const clientIdx = clients.value.findIndex((c) => c.session.sessionId == session.sessionId);
 
@@ -124,11 +122,9 @@ async function handleClose(e: CloseEvent, session: Session) {
     })
 }
 
-async function handleError(e: Event, ws: WebSocket, session: Session){
+async function handleError(_e: Event, ws: WebSocket, session: Session){
     console.log("Session errored: ", session.sessionId); 
     if (ws.OPEN) ws.close();
-
-    await sessions.deleteOne({ sessionId: session.sessionId });
 
     const clientIdx = clients.value.findIndex((c) => c.session.sessionId == session.sessionId);
 

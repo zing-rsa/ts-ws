@@ -1,6 +1,6 @@
 import { MiddlewareHandlerContext } from "$fresh/server.ts";
 
-export async function handler(req: Request, ctx: MiddlewareHandlerContext ) {
+export function handler(req: Request, ctx: MiddlewareHandlerContext ) {
     if(ctx.destination != 'route') return ctx.next();
 
     const cookies: Record<string, string> = {};

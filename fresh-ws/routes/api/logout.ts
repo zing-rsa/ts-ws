@@ -1,12 +1,20 @@
-import { Handlers } from "$fresh/server.ts"
+import { Handlers, MiddlewareHandlerContext } from "$fresh/server.ts"
 
-import { APP_URL, HTTP_PTCL } from "config";
+import { Session } from "models/db.ts";
+import { db } from "mongo";
+import { State } from "models/mw.ts";
 
-export const handler: Handlers = {
-    async POST(req, ctx) {
+const mongo = db();
+const sessions = mongo.collection<Session>('sessions')
+
+// deno-lint-ignore no-explicit-any
+export const handler: Handlers<any, State> = {
+    async POST(_req, ctx) {
+
+        await sessions.deleteOne({ sessionId: ctx.state.cookies['sessionId'] })
+
         const headers = new Headers;
 
-        // headers.set('location', HTTP_PTCL + APP_URL);
         headers.set('location', '/');
         headers.set('Set-Cookie', `sessionId=null; HttpOnly; Max-Age=0; Path=/; SameSite=Strict`);
 

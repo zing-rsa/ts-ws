@@ -8,9 +8,9 @@ import * as $2 from "./routes/api/logout.ts";
 import * as $3 from "./routes/api/ws.ts";
 import * as $4 from "./routes/chat.tsx";
 import * as $5 from "./routes/index.tsx";
-import * as $$0 from "./islands/MessageList.tsx";
-import * as $$1 from "./islands/UserStatus.tsx";
-import * as $$2 from "./islands/gooi.tsx";
+import * as $$0 from "./islands/Gooi.tsx";
+import * as $$1 from "./islands/MessageList.tsx";
+import * as $$2 from "./islands/UserStatus.tsx";
 
 const manifest = {
   routes: {
@@ -22,9 +22,9 @@ const manifest = {
     "./routes/index.tsx": $5,
   },
   islands: {
-    "./islands/MessageList.tsx": $$0,
-    "./islands/UserStatus.tsx": $$1,
-    "./islands/gooi.tsx": $$2,
+    "./islands/Gooi.tsx": $$0,
+    "./islands/MessageList.tsx": $$1,
+    "./islands/UserStatus.tsx": $$2,
   },
   baseUrl: import.meta.url,
 };
