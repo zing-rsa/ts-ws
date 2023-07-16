@@ -1,9 +1,10 @@
-import { AccentButton } from './AccentButton.tsx'
+import { PrimaryButton } from './PrimaryButton.tsx'
+import { APP_URL, HTTP_PTCL } from '../config.ts'
 
 export default function ToolBar() {
     return (
-        <div class='w-full h-12 fixed flex'> 
-            <AccentButton class="h-8 my-2 ml-auto mr-12">Logout</AccentButton>
-        </div>
+        <form method='post' action={`${HTTP_PTCL}${APP_URL}/api/logout`} class='w-full h-12 fixed flex'> 
+            <PrimaryButton class="h-8 my-2 ml-auto mr-12">Logout</PrimaryButton>
+        </form>
     )
 }

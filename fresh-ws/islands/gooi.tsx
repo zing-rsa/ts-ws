@@ -29,8 +29,7 @@ export default function Gooi(props: GooiProps) {
         if (textInputRef.current) textInputRef.current.addEventListener('keydown', submitOnEnter);
 
         if (props.session) {
-            const wsUrl = "wss://" + props.url + "/api/ws";
-            connect(wsUrl);
+            connect(props.url);
         }
     }, []);
     
@@ -71,8 +70,8 @@ export default function Gooi(props: GooiProps) {
     }, []);
     
     return (
-        <div class="h-12 flex flex-row justify-center bg-secondary">
-            <input ref={textInputRef} type="text" value={draft} onInput={update} class="h-10 w-9/12 my-1 px-2 rounded-md shadow-md focus:outline-none"  />
+        <div class="h-12 flex flex-row justify-center bg-primary">
+            <input ref={textInputRef} type="text" value={draft} onInput={update} class="h-10 w-9/12 my-1 px-2 rounded-md shadow-inner focus:outline-none"  />
             <PrimaryButton onClick={() => gooi(draft.value)} class="h-10 my-1 mx-2">Gooi</PrimaryButton>
         </div>
     )

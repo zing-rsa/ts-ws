@@ -5,9 +5,11 @@ import { Message, SocketMessageType, WsData } from "models/ws.ts"
 import TypingIndicator from "components/TypingIndicator.tsx";
 import { MessageItem } from "components/MessageItem.tsx"
 import { wsClient } from "util/wsClient.ts";
+import { Session } from "models/db.ts";
 
 interface MessageListProps {
-    messages: Message[]
+    messages: Message[],
+    session: Session
 }
 
 export default function MessageList(props: MessageListProps) {
@@ -44,8 +46,8 @@ export default function MessageList(props: MessageListProps) {
 
     return (
         <>
-            <div ref={chatWindowRef} class='w-full px-2 md:px-6 flex flex-col overflow-y-auto shadow-inner bg-chat-tile '>
-                {messageList.value.map((m) => ( <MessageItem message={m} /> ))}
+            <div ref={chatWindowRef} class='w-full px-2 md:px-6 flex flex-col overflow-y-auto shadow-inner bg-chat-tile'>
+                {messageList.value.map((m) => ( <MessageItem message={m} own={m.session.sessionId == props.session.sessionId}/> ))}
                 <div class="w-24 h-3 mx-2">{typing.value ? <TypingIndicator /> : <>&nbsp;</>}</div>
             </div>
         </>

@@ -4,9 +4,10 @@
 
 import * as $0 from "./routes/_app.tsx";
 import * as $1 from "./routes/_middleware.ts";
-import * as $2 from "./routes/api/ws.tsx";
-import * as $3 from "./routes/chat.tsx";
-import * as $4 from "./routes/index.tsx";
+import * as $2 from "./routes/api/logout.ts";
+import * as $3 from "./routes/api/ws.ts";
+import * as $4 from "./routes/chat.tsx";
+import * as $5 from "./routes/index.tsx";
 import * as $$0 from "./islands/MessageList.tsx";
 import * as $$1 from "./islands/UserStatus.tsx";
 import * as $$2 from "./islands/gooi.tsx";
@@ -15,9 +16,10 @@ const manifest = {
   routes: {
     "./routes/_app.tsx": $0,
     "./routes/_middleware.ts": $1,
-    "./routes/api/ws.tsx": $2,
-    "./routes/chat.tsx": $3,
-    "./routes/index.tsx": $4,
+    "./routes/api/logout.ts": $2,
+    "./routes/api/ws.ts": $3,
+    "./routes/chat.tsx": $4,
+    "./routes/index.tsx": $5,
   },
   islands: {
     "./islands/MessageList.tsx": $$0,
