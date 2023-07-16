@@ -1,8 +1,8 @@
-import { Handlers, MiddlewareHandlerContext } from "$fresh/server.ts"
+import { Handlers } from "$fresh/server.ts"
 
 import { Session } from "models/db.ts";
-import { db } from "mongo";
 import { State } from "models/mw.ts";
+import { db } from "mongo";
 
 const mongo = db();
 const sessions = mongo.collection<Session>('sessions')

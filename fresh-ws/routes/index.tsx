@@ -3,8 +3,8 @@ import { UUID } from "$mongo";
 
 import { APP_URL, HTTP_PTCL } from "config";
 import { Session } from 'models/db.ts'
-import { db } from "mongo";
 import { State } from "models/mw.ts";
+import { db } from "mongo";
 
 const mongo = db();
 const sessions = mongo.collection<Session>('sessions');

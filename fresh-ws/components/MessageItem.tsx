@@ -9,9 +9,6 @@ const ownStyle   = 'bg-accent text-text-light rounded-l-lg ml-auto'
 const otherStyle = 'bg-white  rounded-r-lg'
 
 export function MessageItem(props: MessageProps){
-
-
-
     return (
         <div class={`min-h-12 w-fit m-2 p-1 flex flex-col rounded-t-lg ${props.own ? ownStyle : otherStyle}`}>
             <div class="text-sm italic flex items-center">

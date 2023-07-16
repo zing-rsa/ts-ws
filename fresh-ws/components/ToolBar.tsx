@@ -1,5 +1,5 @@
 import { PrimaryButton } from './PrimaryButton.tsx'
-import { APP_URL, HTTP_PTCL } from '../config.ts'
+import { APP_URL, HTTP_PTCL } from 'config'
 
 export default function ToolBar() {
     return (

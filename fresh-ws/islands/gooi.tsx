@@ -3,8 +3,8 @@ import { useSignal } from "@preact/signals";
 
 import { PrimaryButton } from "../components/PrimaryButton.tsx"
 import { SocketMessageType, WsData } from "models/ws.ts";
-import { Session } from "models/db.ts";
 import { wsClient, connect } from 'util/wsClient.ts'
+import { Session } from "models/db.ts";
 
 interface GooiProps { 
     session: Session,
@@ -58,13 +58,8 @@ export default function Gooi(props: GooiProps) {
         }
     }, []);
 
-    const notifyLogin = useCallback(() => {
-        if (wsClient.value) {
-            wsClient.value.send(JSON.stringify(loginData));
-        }
-    }, [wsClient.value]);
-
-    const update = useCallback((e) => {
+    // deno-lint-ignore no-explicit-any
+    const update = useCallback((e: any) => {
         if (wsClient.value) wsClient.value.send(JSON.stringify(typingData))
         draft.value = e.target.value;
     }, []);

@@ -1,6 +1,6 @@
-import { Collection } from "https://deno.land/x/mongo/mod.ts";
-import { Handlers } from "$fresh/server.ts";
 import { signal } from "@preact/signals-core"
+import { Handlers } from "$fresh/server.ts";
+import { Collection } from "$mongo";
 
 import { WsData, WsTextValue, SocketMessageType } from "models/ws.ts";
 import { Message, Client } from "models/ws.ts";
@@ -16,6 +16,7 @@ const clients = signal<Client[]>([]);
 const typing = signal<boolean>(false);
 let typingTimeout = 0;
 
+// deno-lint-ignore no-explicit-any
 export const handler: Handlers<any, State> = {
     async GET(req, ctx){
         
@@ -102,7 +103,7 @@ function handleOpen(_e: Event, ws: WebSocket, session: Session){
     });
 }
 
-async function handleClose(_e: CloseEvent, session: Session) {
+function handleClose(_e: CloseEvent, session: Session) {
     console.log("Closing session: ", session.sessionId);
 
     const clientIdx = clients.value.findIndex((c) => c.session.sessionId == session.sessionId);
@@ -122,7 +123,7 @@ async function handleClose(_e: CloseEvent, session: Session) {
     })
 }
 
-async function handleError(_e: Event, ws: WebSocket, session: Session){
+function handleError(_e: Event, ws: WebSocket, session: Session){
     console.log("Session errored: ", session.sessionId); 
     if (ws.OPEN) ws.close();
 

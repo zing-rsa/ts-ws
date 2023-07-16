@@ -1,4 +1,4 @@
-import { ObjectId, UUID } from "https://deno.land/x/mongo/mod.ts"
+import { ObjectId} from "$mongo"
 
 export interface Session {
     _id?: ObjectId,
