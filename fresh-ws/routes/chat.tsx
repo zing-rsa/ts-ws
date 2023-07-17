@@ -24,7 +24,9 @@ export const handler: Handlers<any, State> = {
         
         const recentMessages = await messages.find().skip((await messages.countDocuments()) - 20).toArray();
         
-        const activeSessions = await sessions.find({}).toArray();
+        const activeSessions = await sessions.find().toArray();
+
+        console.log(activeSessions);
 
         return ctx.render({
             session,

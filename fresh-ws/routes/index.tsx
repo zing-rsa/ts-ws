@@ -13,10 +13,11 @@ const sessions = mongo.collection<Session>('sessions');
 export const handler: Handlers<any, State> = {
     async POST(req, ctx) {
 
-        const activeSession = await sessions.findOne({ sessionId: ctx.state.cookies['sessionId'] })
-
-        if(activeSession) {
-            await sessions.deleteOne({ sessionId: activeSession.sessionId });
+        if (ctx.state.cookies['sessionId']) {
+            const activeSession = await sessions.findOne({ sessionId: ctx.state.cookies['sessionId'] })
+            if(activeSession) {
+                await sessions.deleteOne({ sessionId: activeSession.sessionId });
+            }
         }
 
         const form = await req.formData();
