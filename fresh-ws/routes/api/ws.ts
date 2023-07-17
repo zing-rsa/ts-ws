@@ -1,4 +1,3 @@
-import { signal } from "@preact/signals-core"
 import { Handlers } from "$fresh/server.ts";
 import { Collection } from "$mongo";
 
@@ -12,8 +11,10 @@ const mongo = db();
 const messages: Collection<Message> = mongo.collection('messages');
 const sessions: Collection<Session> = mongo.collection('sessions');
 
-const clients = signal<Client[]>([]);
-const typing = signal<boolean>(false);
+const clients: Client[] = [];
+const closingClients: Record<string, number> = {}
+
+let typing = false;
 let typingTimeout = 0;
 
 // deno-lint-ignore no-explicit-any
@@ -49,7 +50,7 @@ async function handleMessage(e: MessageEvent, session: Session) {
     const data: WsData = JSON.parse(e.data);
     
     if (data.type == SocketMessageType.Text){
-        if (typing.value) {
+        if (typing) {
             handleTypeEnd(session);
         }
         
@@ -64,13 +65,13 @@ async function handleMessage(e: MessageEvent, session: Session) {
         data.value = message;
 
         
-        clients.value.forEach((c) => c.connection.send(JSON.stringify(data)));
+        clients.forEach((c) => c.connection.send(JSON.stringify(data)));
     }
 
     if (data.type == SocketMessageType.UserAction){
         if (data.value.typing) {
-            typing.value = true;
-            clients.value.forEach((c) => {
+            typing = true;
+            clients.forEach((c) => {
                 if(c.session.sessionId != session.sessionId){
                     c.connection.send(JSON.stringify(data))
                 }
@@ -83,14 +84,18 @@ async function handleMessage(e: MessageEvent, session: Session) {
 }
 
 function handleOpen(_e: Event, ws: WebSocket, session: Session){
-    console.log("Starting session: ", session.sessionId); 
+    console.log("Starting session: ", session.sessionId);
 
-    clients.value.push({
+    if (closingClients[session.sessionId]){
+        clearTimeout(closingClients[session.sessionId]);
+    }
+
+    clients.push({
         session: session,
         connection: ws
     });
 
-    clients.value.forEach((c) => {
+    clients.forEach((c) => {
         if (c.session.sessionId != session.sessionId){
             c.connection.send(JSON.stringify({
                 type: SocketMessageType.AccountState,
@@ -106,17 +111,19 @@ function handleOpen(_e: Event, ws: WebSocket, session: Session){
 function handleClose(_e: CloseEvent, session: Session) {
     console.log("Closing session: ", session.sessionId);
 
-    const clientIdx = clients.value.findIndex((c) => c.session.sessionId == session.sessionId);
+    const clientIdx = clients.findIndex((c) => c.session.sessionId == session.sessionId);
 
     if (clientIdx >= 0) {
-        clients.value.splice(clientIdx, 1);
+        clients.splice(clientIdx, 1);
     }
 
-    clients.value.forEach((c) => {
+    closingClients[session.sessionId] = setTimeout(() => removeSession(session.sessionId), 5000);
+
+    clients.forEach((c) => {
         c.connection.send(JSON.stringify({
             type: SocketMessageType.AccountState,
             value: {
-                online:false,
+                online: false,
                 session: session
             }
         })); 
@@ -127,21 +134,26 @@ function handleError(_e: Event, ws: WebSocket, session: Session){
     console.log("Session errored: ", session.sessionId); 
     if (ws.OPEN) ws.close();
 
-    const clientIdx = clients.value.findIndex((c) => c.session.sessionId == session.sessionId);
+    const clientIdx = clients.findIndex((c) => c.session.sessionId == session.sessionId);
 
     if (clientIdx >= 0) {
-        clients.value.splice(clientIdx, 1);
+        clients.splice(clientIdx, 1);
     }
 }
 
 function handleTypeEnd(session: Session) {
-    typing.value = false;
+    typing = false;
 
-    clients.value.forEach((c) => c.connection.send(JSON.stringify({
+    clients.forEach((c) => c.connection.send(JSON.stringify({
         type: SocketMessageType.UserAction,
         value: {
             typing: false,
             session: session
         }
     })));
+}
+
+async function removeSession(sessionId: string) {
+    await sessions.deleteOne({ sessionId });
+    delete closingClients[sessionId];
 }

@@ -32,8 +32,6 @@ export default function UserStatus(props: UserStatusProps) {
         }
     }, []);
 
-    console.log(sessions.value)
-
     return (
         <div class="hidden lg:flex flex-col w-48 bg-tertiary">
             <div class="w-full h-12 px-4 text-center text-text-light">

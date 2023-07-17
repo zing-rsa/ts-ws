@@ -18,15 +18,19 @@ const sessions = mongo.collection<Session>('sessions')
 export const handler: Handlers<any, State> = {
     async GET(_req, ctx) {
 
-        const session = await sessions.findOne({ sessionId: ctx.state.cookies['sessionId'] })
+        const session = await sessions.findOne({ sessionId: ctx.state.cookies['sessionId'] || '_' })
         
-        if (!session) return new Response(null, {status: 400});
+        if (!session) {
+            const headers = new Headers();
+
+            headers.set('location', '/');
+
+            return new Response(null, { status: 303, headers });
+        } 
         
         const recentMessages = await messages.find().skip((await messages.countDocuments()) - 20).toArray();
         
         const activeSessions = await sessions.find().toArray();
-
-        console.log(activeSessions);
 
         return ctx.render({
             session,
