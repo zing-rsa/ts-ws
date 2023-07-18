@@ -27,8 +27,10 @@ export const handler: Handlers<any, State> = {
 
             return new Response(null, { status: 303, headers });
         } 
+
+        const currentMessageCount = await messages.countDocuments();
         
-        const recentMessages = await messages.find().skip((await messages.countDocuments()) - 20).toArray();
+        const recentMessages = await messages.find().skip(currentMessageCount < 20 ? 0 : currentMessageCount - 20).toArray();
         
         const activeSessions = await sessions.find().toArray();
 
